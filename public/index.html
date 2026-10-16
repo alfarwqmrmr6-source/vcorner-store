@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ڤي كورنر | V Corner</title>
+<style>
+  :root { --gold: #b89b5e; --bg: #0b0b0a; --card: #141411; --ink: #f3f1ea; --ink2: #b3b0a5; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: system-ui, sans-serif; }
+  header { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; border-bottom: 1px solid #2a2924; }
+  .brand { font-size: 24px; font-weight: bold; color: var(--gold); text-decoration: none; }
+  .hero { text-align: center; padding: 50px 20px; }
+  .hero h1 { font-size: 38px; color: var(--gold); margin-bottom: 10px; }
+  .contact-banner { background: #1d1c19; text-align: center; padding: 12px; font-size: 16px; border-top: 1px solid var(--gold); border-bottom: 1px solid var(--gold); }
+  .contact-banner b { color: var(--gold); direction: ltr; display: inline-block; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; padding: 40px; max-width: 1200px; margin: 0 auto; }
+  .card { background: var(--card); border: 1px solid #2a2924; border-radius: 8px; padding: 20px; text-align: center; }
+  .price { color: var(--gold); font-weight: bold; font-size: 18px; margin: 10px 0; }
+  .btn { background: var(--gold); color: #111; border: none; padding: 10px 20px; border-radius: 4px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-block; }
+</style>
+</head>
+<body>
+  <header>
+    <a href="#" class="brand">V CORNER | ڤي كورنر</a>
+    <a href="/admin.html" style="color: var(--ink2); text-decoration: none;">دخول لوحة التحكم</a>
+  </header>
+
+  <div class="contact-banner">
+    للطلب السريع والاستفسار المباشر عبر الواتساب: <b>07729157500</b>
+  </div>
+
+  <section class="hero">
+    <h1>متجر العطور الفاخرة</h1>
+    <p>أرقى العطور بلمسة كلاسيكية مميزة في جميع محافظات العراق بالدينار العراقي.</p>
+  </section>
+
+  <div class="grid" id="productGrid"></div>
+
+  <script>
+    fetch('/api/products')
+      .then(res => res.json())
+      .then(products => {
+        const grid = document.getElementById('productGrid');
+        if(!Array.isArray(products) || products.length === 0) {
+          grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--ink2);">لا توجد منتجات مضافة حالياً.</p>';
+          return;
+        }
+        grid.innerHTML = products.map(p => `
+          <div class="card">
+            <h3>${p.product_name}</h3>
+            <p style="color: var(--ink2);">${p.concentration || 'عطر فاخر'}</p>
+            <div class="price">${Number(p.price_iqd).toLocaleString()} د.ع</div>
+            <a href="https://wa.me/9647729157500?text=أرغب بطلب منتج: ${encodeURIComponent(p.product_name)}" class="btn" target="_blank">اطلب عبر واتساب</a>
+          </div>
+        `).join('');
+      });
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة التحكم | ڤي كورنر</title>
+<style>
+  :root { --gold: #b89b5e; --bg: #0b0b0a; --card: #141411; --ink: #f3f1ea; --ink2: #b3b0a5; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: system-ui, sans-serif; padding: 20px; }
+  .box { max-width: 450px; margin: 80px auto; background: var(--card); padding: 30px; border-radius: 8px; border: 1px solid #2a2924; }
+  input, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 4px; border: 1px solid #2a2924; background: #1d1c19; color: var(--ink); box-sizing: border-box; }
+  button { background: var(--gold); color: #111; font-weight: bold; cursor: pointer; border: none; }
+  table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+  th, td { padding: 12px; border-bottom: 1px solid #2a2924; text-align: right; }
+  th { color: var(--gold); }
+</style>
+</head>
+<body>
+  <div id="loginSection" class="box">
+    <h2 style="text-align: center; color: var(--gold);">تسجيل الدخول</h2>
+    <input type="email" id="email" placeholder="البريد الإلكتروني" dir="ltr" value="manager@vcorner.iq">
+    <input type="password" id="password" placeholder="كلمة المرور" dir="ltr" value="1234">
+    <button onclick="login()">دخول</button>
+    <p id="errMsg" style="color: #e2705f; text-align: center;"></p>
+  </div>
+
+  <div id="dashboardSection" style="display: none; max-width: 1000px; margin: 0 auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2a2924; padding-bottom: 10px;">
+      <h2>لوحة التحكم الإدارية</h2>
+      <button onclick="logout()" style="width: auto; padding: 8px 18px;">تسجيل خروج</button>
+    </div>
+    <p>رقم التواصل الإداري المعتمد: <b>07729157500</b></p>
+    
+    <h3>الطلبات الواردة</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>رقم الطلب</th>
+          <th>اسم الزبون</th>
+          <th>الهاتف</th>
+          <th>المحافظة</th>
+          <th>المبلغ الإجمالي</th>
+          <th>الحالة</th>
+        </tr>
+      </thead>
+      <tbody id="ordersTable">
+        <tr><td colspan="6" style="text-align: center;">لا توجد طلبات مسجلة حالياً</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    async function login() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if(res.ok) {
+        localStorage.setItem('token', data.token);
+        loadDashboard();
+      } else {
+        document.getElementById('errMsg').innerText = data.error;
+      }
+    }
+
+    function loadDashboard() {
+      document.getElementById('loginSection').style.display = 'none';
+      document.getElementById('dashboardSection').style.display = 'block';
+      fetchOrders();
+    }
+
+    async function fetchOrders() {
+      const token = localStorage.getItem('token');
+      const res = await fetch('/api/orders', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      if(res.ok) {
+        const orders = await res.json();
+        const tbody = document.getElementById('ordersTable');
+        if(orders.length > 0) {
+          tbody.innerHTML = orders.map(o => `
+            <tr>
+              <td>${o.order_number}</td>
+              <td>${o.customer_name}</td>
+              <td dir="ltr">${o.customer_phone}</td>
+              <td>${o.city}</td>
+              <td>${Number(o.total_iqd).toLocaleString()} د.ع</td>
+              <td>${o.order_status}</td>
+            </tr>
+          `).join('');
+        }
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('token');
+      location.reload();
+    }
+
+    if(localStorage.getItem('token')) {
+      loadDashboard();
+    }
+  </script>
+</body>
+</html>
